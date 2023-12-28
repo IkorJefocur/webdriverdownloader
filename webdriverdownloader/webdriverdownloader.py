@@ -310,7 +310,8 @@ class GeckoDriverDownloader(WebDriverDownloaderBase):
             bitness = get_architecture_bitness()
             logger.debug("Detected OS: {0}bit {1}".format(bitness, os_name))
 
-        filenames = [asset['name'] for asset in json_data['assets']]
+        indexed_filenames = [asset['name'] for asset in json_data['assets']]
+        filenames = [name for name in indexed_filenames if not name.endswith('.asc')]
         filename = [name for name in filenames if os_name in name]
         if len(filename) == 0:
             info_message = "Error, unable to find a download for os: {0}".format(os_name)
@@ -324,7 +325,7 @@ class GeckoDriverDownloader(WebDriverDownloaderBase):
                 raise RuntimeError(info_message)
         filename = filename[0]
 
-        result = json_data['assets'][filenames.index(filename)]['browser_download_url']
+        result = json_data['assets'][indexed_filenames.index(filename)]['browser_download_url']
         logger.info("Download URL: {0}".format(result))
         return result
 
